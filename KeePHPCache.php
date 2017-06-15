@@ -43,8 +43,31 @@ class KeePHPCache
 
 		return $data;
 	}
-	
-		
+
+
+	/**
+	 * @param $url
+	 * @return TRUE on success or FALSE on failure
+	 */
+	public function removeCacheFile($url) {
+		if(!file_exists($url)) {
+			return false;
+		}
+		else {
+			return unlink($url);
+		}
+	}
+
+
+	/**
+	 * @param $url
+	 * @return TRUE on success or FALSE on failure
+	 */
+	public function cacheExists($url) {
+		return file_exists($url);
+	}
+
+
 	/**
 	 * @param $templatename
 	 * @param int $time
