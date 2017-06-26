@@ -1,10 +1,15 @@
 <?php
 class KeePHPCache
 {
-	public $host_name	= 'http://www.northlandchurch.net';
+	public $host_name	= 'https://www.northlandchurch.net';
 	public $cache_path 	= '/var/www/ee/new_page_caching';
 	public $cache_file 	= '/index.html';
-	
+
+	public $DB_SERVER	= "nacd-db.c3zfiehi4eja.us-east-1.rds.amazonaws.com";
+	public $DB_USER		= "root";
+	public $DB_PASSWORD	= "na32750cD";
+	public $DB_NAME		= "ee";
+
 	/**
 	 * @var array
 	 */
@@ -25,11 +30,11 @@ class KeePHPCache
 		
 	/**
 	 * @param $templatename
-	 * @return string
+	 * @return string of page
 	*/
     public function writeCacheFile($templatename)
 	{
-		// URL: http://ee-dev.northlandchurch.net/_component/kee_video_featured
+		// URL: https://www.northlandchurch.net/_component/kee_video_featured
 		$url	= $this->host_name . $templatename;			
 		// File: /var/www/ee/new_page_caching/_component/kee_video_featured/index.html
 		$file 	= $this->cache_path . $templatename . $this->cache_file;				
@@ -43,6 +48,60 @@ class KeePHPCache
 
 		return $data;
 	}
+
+
+	/**
+	 * @param $templatename
+	 * @return string of page
+	*/
+    public function writeDB($realurl, $templatename)
+	{
+		// URL: 'https://www.northlandchurch.net' . $templatename
+		$url	= $this->host_name . $templatename;
+		// File: '/var/www/ee/new_page_caching' . $templatename . '/index.html'
+		$file 	= $this->cache_path . $templatename . $this->cache_file;
+
+
+		$mysqli = new mysqli($this->DB_SERVER, $this->DB_USER, $this->DB_PASSWORD, $this->DB_NAME);
+
+		// Check connection
+		if (mysqli_connect_errno())
+		{
+			return '<!-- Could not connect: ' . mysqli_connect_error() . ' -->';
+		}
+
+
+		$query = "SELECT * FROM nc_cache_map WHERE url = '" . $realurl . "'";
+
+		if (($result = $mysqli->query($query)) === FALSE)
+		{
+			return '<!-- Error on Query: ' . $query . ' -->';
+		}
+
+		if ($result->num_rows > 0)
+		{
+			$row = $result->fetch_array(MYSQLI_ASSOC);
+
+			// Update the row
+			$query1 = "UPDATE nc_cache_map SET file_path = '" . $file . "' WHERE id = " . $row['id'];
+		}
+		else
+		{
+			// Insert a row
+			$query1 = sprintf("INSERT INTO nc_cache_map (url, file_path) VALUES ('%s', '%s')", $realurl, $file);
+		}
+		$result->close();
+
+		if ($mysqli->query($query1) === FALSE)
+		{
+			return '<!-- Error on query: ' . $mysqli->error . ' -->';
+		}
+
+
+		$mysqli->close();
+		return '<!-- Success to insert/update -->';
+	}
+
 
 
 	/**

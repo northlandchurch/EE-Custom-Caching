@@ -22,5 +22,7 @@ These scripts were written to cache the html files rendered by ExpressionEngine'
 		// Write content into a cache file and display it
 		echo $cache->writeCacheFile($request_uri);
 		echo "<!-- End of Live contents at " . $request_uri . "... -->";
+		echo $cache->writeDB('{current_url}', $request_uri);
 	}
+	echo PHP_EOL . '<!-- {current_url} -->';
 ```
