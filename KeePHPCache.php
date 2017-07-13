@@ -2,8 +2,10 @@
 class KeePHPCache
 {
 	public $host_name	= 'https://www.northlandchurch.net';
+	public $roku_host_name	= 'http://www.northlandchurch.net/index.php';
 	public $cache_path 	= '/var/www/ee/new_page_caching';
 	public $cache_file 	= '/index.html';
+	public $cache_xml_file 	= '/index.xml';
 
 	public $DB_SERVER	= "nacd-db.c3zfiehi4eja.us-east-1.rds.amazonaws.com";
 	public $DB_USER		= "root";
@@ -30,6 +32,16 @@ class KeePHPCache
 		
 	/**
 	 * @param $templatename
+	 * @return full cache file path (e.g. /var/www/ee/new_page_caching/template.group/template/index.xml)
+	*/
+    public function getRealRokuCacheFilePath($templatename)
+	{
+		return $this->cache_path . $templatename . $this->cache_xml_file;
+	}
+
+		
+	/**
+	 * @param $templatename
 	 * @return string of page
 	*/
     public function writeCacheFile($templatename)
@@ -38,6 +50,50 @@ class KeePHPCache
 		$url	= $this->host_name . $templatename;			
 		// File: /var/www/ee/new_page_caching/_component/kee_video_featured/index.html
 		$file 	= $this->cache_path . $templatename . $this->cache_file;				
+
+		
+		$data = @file_get_contents($url);
+
+		$fp = fopen($file, 'w'); 			// open cache file
+		fwrite($fp, $data); 				// create new cache file
+		fclose($fp); 						// close cache file
+
+		return $data;
+	}
+
+
+	/**
+	 * @param $templatename
+	 * @return string of page
+	*/
+    public function writeCacheFileforRoku($templatename)
+	{
+		// URL: http://www.northlandchurch.net/index.php/{template_name}
+		$url	= $this->roku_host_name . $templatename;			
+		// File: /var/www/ee/new_page_caching/feed/{template_path}/index.html
+		$file 	= $this->cache_path . $templatename . $this->cache_xml_file;				
+
+		
+		$data = @file_get_contents($url);
+
+		$fp = fopen($file, 'w'); 			// open cache file
+		fwrite($fp, $data); 				// create new cache file
+		fclose($fp); 						// close cache file
+
+		return $data;
+	}
+
+
+	/**
+	 * @param $templatename
+	 * @return string of page
+	*/
+    public function writeRokuCacheFile($templatename)
+	{
+		// URL: http://www.northlandchurch.net/index.php/{template_name}
+		$url	= $this->roku_host_name . $templatename;			
+		// File: /var/www/ee/new_page_caching/feed/{template_path}/index.xml
+		$file 	= $this->cache_path . $templatename . $this->cache_xml_file;				
 
 		
 		$data = @file_get_contents($url);
@@ -174,6 +230,54 @@ class KeePHPCache
 	}
 	
 	
+
+	/**
+	 * @param $templatename
+	 * @param int $time
+	 * @return bool
+	 * @throws \Exception
+	*/
+    public function isRokuCacheExpired($templatename, $time = 60)
+	{
+		$expired 	= true;
+		$path 		= $this->cache_path . $templatename;		// Path: /var/www/ee/new_page_caching/_component/kee_past_news
+		$file 		= $path . $this->cache_xml_file;				// File: /var/www/ee/new_page_caching/_component/kee_past_news/index.xml
+		$interval 	= '+' . $time . ' minutes';					// Expiration Interval: '+10 minutes'
+
+		try 
+		{
+			////////////////////////////////////////////////////////////////////////////////
+			// Check if cache file exists, Create a cache file if it does not exist
+			////////////////////////////////////////////////////////////////////////////////
+			if ($this->checkRokuCache($path))
+			{
+				$current_time 	= time();
+				$cache_last_mod	= filemtime($file); 	// Time when the cache file was last modified
+
+				// Check if cache file hasn't expired yet
+				if($current_time < strtotime($interval, $cache_last_mod))
+				{
+					$expired = false;
+				}
+				else
+				{
+					$expired = true;
+				}
+			}
+			else
+			{
+				$expired = true;
+			}
+        } 
+		catch (\Exception $e) 
+		{
+			echo $e->getMessage() . "<BR>";
+		}
+		
+		return $expired;
+	}
+	
+
 	/**
 	 * @param $path
 	 * @return bool
@@ -213,6 +317,41 @@ class KeePHPCache
 	}
 	
 	
+    private function checkRokuCache($path)
+	{
+		$file = $path . $this->cache_xml_file;
+		//////////////////////////////////////////////////////////////
+		// Check if cache file exists, 
+		// Create a cache file if it does not exist
+		//////////////////////////////////////////////////////////////
+		if (file_exists($file))
+		{
+			return true;
+		}
+		else 
+		{
+			//////////////////////////////////////////////////////////////
+			// Check the directory, Create a $path if does not exist
+			//////////////////////////////////////////////////////////////
+			$dir = @opendir($path);
+			if (!$dir) 
+			{
+				if (!@mkdir($path, self::__setChmodAuto($this->config), true))
+				{
+					throw new Exception("Can't create path:" . $path, 93);
+//					die('Failted to create folders: ' . $path . PHP_EOL);
+				}
+			}
+
+			$f = fopen($path . $this->cache_xml_file, 'w');
+			fclose($f);
+			
+			return false;
+		}
+	}
+	
+	
+
     /**
      * @param $config
      * @return int
