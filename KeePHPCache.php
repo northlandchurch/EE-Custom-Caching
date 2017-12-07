@@ -229,7 +229,7 @@ class KeePHPCache
 			////////////////////////////////////////////////////////////////////////////////
 			// Check if cache file exists, Create a cache file if it does not exist
 			////////////////////////////////////////////////////////////////////////////////
-			if ($this->checkCache($path))
+			if ($this->cacheExists($templatename))
 			{
 				$current_time 	= time();
 				$cache_last_mod	= filemtime($file); 	// Time when the cache file was last modified
