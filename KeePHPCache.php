@@ -47,18 +47,37 @@ class KeePHPCache
     public function writeCacheFile($templatename)
 	{
 		// URL: https://www.northlandchurch.net/_component/kee_video_featured
-		$url	= $this->host_name . $templatename;			
+		$url	= $this->host_name . $templatename;		
+		// Path: /var/www/ee/new_page_caching/_component/kee_past_news
+		$path 		= $this->cache_path . $templatename;
 		// File: /var/www/ee/new_page_caching/_component/kee_video_featured/index.html
 		$file 	= $this->cache_path . $templatename . $this->cache_file;				
 
-		
+
 		$data = @file_get_contents($url);
+		if($data === false) {
+			// Error encountered, no cache written
+			return $data;
+		}
+		else {
+			//////////////////////////////////////////////////////////////
+			// Check the directory, Create a $path if does not exist
+			//////////////////////////////////////////////////////////////
+			$dir = @opendir($path);
+			if (!$dir) 
+			{
+				if (!@mkdir($path, self::__setChmodAuto($this->config), true))
+				{
+					throw new Exception("Can't create path:" . $path, 93);
+					// die('Failted to create folders: ' . $path . PHP_EOL);
+				}
+			}
+			$fp = fopen($file, 'w'); 			// open cache file
+			fwrite($fp, $data); 				// create new cache file
+			fclose($fp); 						// close cache file
 
-		$fp = fopen($file, 'w'); 			// open cache file
-		fwrite($fp, $data); 				// create new cache file
-		fclose($fp); 						// close cache file
-
-		return $data;
+			return $data;
+		}
 	}
 
 
