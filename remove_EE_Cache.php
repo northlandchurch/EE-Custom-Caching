@@ -102,7 +102,7 @@
 		$cache = new KeePHPCache();
 
 		// Confirm that cache already exists
-		if($cache->cacheExists($pathToCacheFile)){
+		if($cache->cacheExistsByURL($pathToCacheFile)){
 
 			// Cached file removal succeeds
 			if($cache->removeCacheFile($pathToCacheFile)) {
