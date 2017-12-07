@@ -194,13 +194,22 @@ class KeePHPCache
 
 
 	/**
+	 * @param $templatename
+	 * @return TRUE on success or FALSE on failure
+	 */
+	public function cacheExists($templatename) {
+		$path 		= $this->cache_path . $templatename;		// Path: /var/www/ee/new_page_caching/_component/kee_past_news
+		$file 		= $path . $this->cache_file;				// File: /var/www/ee/new_page_caching/_component/kee_past_news/index.html
+		return file_exists($file);
+	}
+
+	/**
 	 * @param $url
 	 * @return TRUE on success or FALSE on failure
 	 */
-	public function cacheExists($url) {
+	public function cacheExistsByURL($url) {
 		return file_exists($url);
 	}
-
 
 	/**
 	 * @param $templatename
