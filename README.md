@@ -3,6 +3,7 @@
 ## Purpose
 
 These scripts were written to cache the html files rendered by ExpressionEngine's Templates.
+Put below php code in the EE template, then it will create a cached file in the $cache_path (i.e. /var/www/ee/new_page_caching) followed by $request_uri
 
 ## Usage
 ```php
