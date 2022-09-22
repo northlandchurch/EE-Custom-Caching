@@ -1,8 +1,8 @@
 <?php
 
 	//lookup table
-	const DB_SERVER	= "nacd-db.c3zfiehi4eja.us-east-1.rds.amazonaws.com";
-	const DB_USER		= "root";
+	const DB_SERVER	= "localhost";
+	const DB_USER		= "admin";
 	const DB_PASSWORD	= "na32750cD";
 	const DB_NAME		= "ee";
 

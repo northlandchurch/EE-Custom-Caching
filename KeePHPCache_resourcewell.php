@@ -1,7 +1,7 @@
 <?php
 class KeePHPCache
 {
-	public $host_name	= 'http://www.resourcewell.org';
+	public $host_name	= 'https://www.resourcewell.org';
 	public $cache_path 	= '/var/www/ee/new_page_caching/resourcewell';
 	public $cache_file 	= '/index.html';
 	

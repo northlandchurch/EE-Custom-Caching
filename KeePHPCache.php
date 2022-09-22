@@ -1,14 +1,14 @@
 <?php
 class KeePHPCache
 {
-	public $host_name	= 'https://www.northlandchurch.net';
-	public $roku_host_name	= 'http://www.northlandchurch.net/index.php';
+	public $host_name	= 'https://northlandchurch.church';
+	public $roku_host_name	= 'http://northlandchurch.church/index.php';
 	public $cache_path 	= '/var/www/ee/new_page_caching';
 	public $cache_file 	= '/index.html';
 	public $cache_xml_file 	= '/index.xml';
 
-	public $DB_SERVER	= "nacd-db.c3zfiehi4eja.us-east-1.rds.amazonaws.com";
-	public $DB_USER		= "root";
+	public $DB_SERVER	= "localhost";
+	public $DB_USER		= "admin";
 	public $DB_PASSWORD	= "na32750cD";
 	public $DB_NAME		= "ee";
 
@@ -46,7 +46,7 @@ class KeePHPCache
 	*/
     public function writeCacheFile($templatename)
 	{
-		// URL: https://www.northlandchurch.net/_component/kee_video_featured
+		// URL: https://northlandchurch.church/_component/kee_video_featured
 		$url	= $this->host_name . $templatename;		
 		// Path: /var/www/ee/new_page_caching/_component/kee_past_news
 		$path 		= $this->cache_path . $templatename;
@@ -87,7 +87,7 @@ class KeePHPCache
 	*/
     public function writeCacheFileforRoku($templatename)
 	{
-		// URL: http://www.northlandchurch.net/index.php/{template_name}
+		// URL: http://northlandchurch.church/index.php/{template_name}
 		$url	= $this->roku_host_name . $templatename;			
 		// File: /var/www/ee/new_page_caching/feed/{template_path}/index.html
 		$file 	= $this->cache_path . $templatename . $this->cache_xml_file;				
@@ -109,7 +109,7 @@ class KeePHPCache
 	*/
     public function writeRokuCacheFile($templatename)
 	{
-		// URL: http://www.northlandchurch.net/index.php/{template_name}
+		// URL: http://northlandchurch.church/index.php/{template_name}
 		$url	= $this->roku_host_name . $templatename;			
 		// File: /var/www/ee/new_page_caching/feed/{template_path}/index.xml
 		$file 	= $this->cache_path . $templatename . $this->cache_xml_file;				
@@ -131,7 +131,7 @@ class KeePHPCache
 	*/
     public function writeDB($realurl, $templatename)
 	{
-		// URL: 'https://www.northlandchurch.net' . $templatename
+		// URL: 'https://northlandchurch.church' . $templatename
 		$url	= $this->host_name . $templatename;
 		// File: '/var/www/ee/new_page_caching' . $templatename . '/index.html'
 		$file 	= $this->cache_path . $templatename . $this->cache_file;
